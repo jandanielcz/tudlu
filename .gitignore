@@ -1,0 +1,7 @@
+.idea
+vendor
+node_modules
+media/dist/*
+!media/dist/.gitkeep
+php_errors.log
+*.ps1

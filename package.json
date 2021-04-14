@@ -1,0 +1,18 @@
+{
+  "name": "tudlu",
+  "version": "1.0.0",
+  "description": "Tudlů =====",
+  "main": "index.js",
+  "scripts": {
+    "styles": "npx sass --watch .\\media\\src\\all.scss:.\\media\\dist\\all.css"
+  },
+  "author": "",
+  "license": "WTFPL",
+  "dependencies": {
+    "sass": "^1.32.8"
+  },
+  "devDependencies": {
+    "webpack-cli": "^4.6.0",
+    "webpack": "^4.44.2"
+  }
+}

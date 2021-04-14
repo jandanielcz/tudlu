@@ -1,0 +1,39 @@
+body, h1 {
+	font-family: 'Fira Code', 'Ubuntu Mono', monospace;
+}
+
+#Wrapper {
+	max-width: 80ch;
+	margin: 0 auto;
+}
+
+#InitialLoading {
+	&.hidden {
+		display: none;
+	}
+}
+
+#Insert {
+	padding-left: 30px;
+}
+
+#Holder {
+	g.done {
+		.todoCheck tspan {
+			fill: black;
+		}
+	}
+
+	.todoText, .todoCheck {
+		fill: black;
+		transition: 1s ease-in-out;
+	}
+
+	.todoCheck {
+		cursor: pointer;
+		tspan {
+			fill: white;
+		}
+	}
+}
+
