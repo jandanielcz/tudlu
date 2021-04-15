@@ -4,7 +4,8 @@
   "description": "Tudlů =====",
   "main": "index.js",
   "scripts": {
-    "styles": "npx sass --watch .\\media\\src\\all.scss:.\\media\\dist\\all.css"
+    "styles": "npx sass --watch .\\media\\src\\all.scss:.\\media\\dist\\all.css",
+    "build": "npx sass .\\media\\src\\all.scss:.\\media\\dist\\all.css && npx webpack"
   },
   "author": "",
   "license": "WTFPL",
