@@ -5,3 +5,4 @@ media/dist/*
 !media/dist/.gitkeep
 php_errors.log
 *.ps1
+apidoc

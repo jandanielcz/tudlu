@@ -15,6 +15,18 @@ class TodoController
         $this->todoService = $todoService;
     }
 
+    /**
+     * @api {get} /api/todo get all todos
+     * @apiName allTodos
+     * @apiGroup Todo
+     *
+     * @apiSuccess {Object[]} todos         List of todos.
+     * @apiSuccess {String}   todos.id      UUID ID of todo.
+     * @apiSuccess {Integer}  todos.changed Last todo change in `time`.
+     * @apiSuccess {Integer}  todos.created Todo creation in `time`.
+     * @apiSuccess {String}   todos.text    Todo text.
+     * @apiSuccess {Integer}  [todos.done]    Todo done in `time`.
+     */
     public function allTodos(Request $request, Response $response): Response
     {
         $allTodos = $this->todoService->loadAllNotDeleted();
@@ -23,6 +35,19 @@ class TodoController
         return $response;
     }
 
+    /**
+     * @api {post} /api/todo insert todo
+     * @apiName insertTodo
+     * @apiGroup Todo
+     *
+     * @apiParam {String} text Todo text.
+     *
+     * @apiError (422) 422 Validation error.
+     * @apiError (500) 500 Persist error.
+     *
+     * @apiSuccess (201) 201 Success.
+     * @apiSuccess (201) {text} Location URI of created todo (currently not implemented endpoint).
+     */
     public function insertTodo(Request $request, Response $response): Response
     {
         $body = $request->getBody()->getContents();
@@ -38,6 +63,21 @@ class TodoController
         return $response->withStatus(500);
     }
 
+    /**
+     * @api {patch} /api/todo/:id patch todo
+     * @apiName patchTodo
+     * @apiGroup Todo
+     *
+     * @apiParam {String} id ID UUID.
+     * @apiParam {String} text Todo text (in json body).
+     * @apiParam {Boolean} done Todo done status (in json body).
+     *
+     * @apiError (422) 422 Validation error.
+     * @apiError (404) 404 Todo with :id not found.
+     * @apiError (500) 500 Persist error.
+     *
+     * @apiSuccess (202) 202 Successfully done.
+     */
     public function patchTodo(Request $request, Response $response, array $args): Response
     {
         $id = $args['id'];

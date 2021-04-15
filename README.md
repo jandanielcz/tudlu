@@ -19,6 +19,10 @@ Run in dev
 * run `npx webpack -w` for webpack watch
 * run `npm run-script styles` for scss compilation watching
 
+Generating docs
+---------------
+Apidoc should be installed globally. Then `apidoc -i api/src/ -o apidoc/`
+
 Simplifications
 ---------------
 
