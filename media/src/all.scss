@@ -18,22 +18,42 @@ body, h1 {
 }
 
 #Holder {
-	g.done {
-		.todoCheck tspan {
-			fill: black;
+	position: relative;
+}
+
+.oneTodo {
+	display: grid;
+	grid-template-columns: 3ch auto;
+	grid-template-rows: 1.5rem;
+	transition: top 0.5s ease-in-out;
+	position: absolute;
+	left: 0;
+
+	.todoCheck {
+		grid-column: 1/2;
+		grid-row: 1/2;
+		cursor: pointer;
+
+		span {
+			color: transparent;
+		}
+
+		&:hover span {
+			color: #666;
 		}
 	}
 
-	.todoText, .todoCheck {
-		fill: black;
-		transition: 1s ease-in-out;
+	.todoText {
+		grid-column: 2/3;
+		grid-row: 1/2;
+		cursor: pointer;
 	}
 
-	.todoCheck {
-		cursor: pointer;
-		tspan {
-			fill: white;
+	&.done {
+		.todoCheck span {
+			color: black;
 		}
 	}
 }
+
 

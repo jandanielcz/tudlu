@@ -1,13 +1,15 @@
 'use strict'
 
+import {closest} from "./utils/dom"
+
 let lastTodos;
 
 const todoTemplate = (todo) => {
     return `
-        <g data-id="${todo.id}" class="${(todo.done) ? 'done ' : ''}">
-            <text class="todoCheck" x="0" y="0" transform="${positionToTranslate(todo.position)}">[<tspan>X</tspan>]</text>
-            <text class="todoText" x="30" y="0" transform="${positionToTranslate(todo.position)}">${todo.text}</text>
-        </g>
+        <div data-id="${todo.id}" style="top:${positionToY(todo.position)}px" class="oneTodo ${(todo.done) ? 'done ' : ''}">
+            <div class="todoCheck">[<span>X</span>]</div>
+            <div class="todoText">${todo.text}</div>
+        </div>
     `
 }
 
@@ -22,21 +24,17 @@ const renderTodos = (todos) => {
     })
     let todoGroups = todos.map(todoTemplate)
     box.insertAdjacentHTML('beforeend', todoGroups.join(''))
+    adjustHolderSize()
     return todos
 }
+
 
 const positionToY = (position) => {
     const height = 20
     return (position + 1) * height
 }
 
-const positionToTranslate = (position) => {
-    const height = 20
-    return `translate(0, ${(position + 1) * height})`
-}
-
 const changeTodos = (todos, lastTodos) => {
-    console.log(lastTodos)
     let box = document.getElementById('Holder')
     let count = 0;
 
@@ -53,28 +51,25 @@ const changeTodos = (todos, lastTodos) => {
             box.insertAdjacentHTML('afterbegin',todoTemplate(newTodo))
             return;
         }
+        let group = box.querySelector(`[data-id="${newTodo.id}"]`)
         if (rendered.position !== newTodo.position) {
-            let group = box.querySelector(`[data-id="${newTodo.id}"]`)
-            let texts = Array.from(group.querySelectorAll('text'))
-            texts.forEach((text) => {
-                text.setAttribute('transform', positionToTranslate(newTodo.position));
-            })
+            group.style.top = `${positionToY(newTodo.position)}px`
         }
-        console.log(rendered.done)
-        console.log(newTodo.done)
         if (rendered.done !== newTodo.done) {
-            let group = box.querySelector(`[data-id="${newTodo.id}"]`)
             group.classList.remove('done')
             group.classList.add((newTodo.done) ? 'done': 'undone');
         }
     })
+    adjustHolderSize()
 
 }
 
-const adjustSvgSize = () => {
+const adjustHolderSize = () => {
     let box = document.getElementById('Holder')
-    let parent = box.parentNode;
-    box.setAttribute('width', parent.getBoundingClientRect().width.toString())
+    let h = Array.from(box.querySelectorAll('.oneTodo')).reduce((sum, todo) => {
+        return (sum + todo.getBoundingClientRect().width)
+    }, 0)
+    box.style.height = `${h}px`
 }
 
 const hideLoading = () => {
@@ -141,8 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     document.addEventListener('click', (event) => {
-        if (event.target.matches('.todoCheck')) {
-            let g = event.target.parentNode
+        if (event.target.matches('.todoCheck') || event.target.matches('.todoCheck span')) {
+            let g = closest(event.target, '.oneTodo')
             let id = g.getAttribute('data-id')
             let isDone = g.classList.contains('done')
             doDoneChange(id, !isDone)
@@ -159,5 +154,5 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     )
 
-    adjustSvgSize()
+
 })
