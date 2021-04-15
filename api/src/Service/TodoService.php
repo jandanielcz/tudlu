@@ -21,7 +21,7 @@ class TodoService
             return [];
         }
         $q = [
-            'select * from %n', $this->tableName,' where removed is null order by done, created desc'
+            'select * from %n', $this->tableName,' where removed is null order by changed desc'
         ];
         $r = $this->connection->query($q)->fetchAll();
         return $this->mapRows($r);
@@ -50,15 +50,16 @@ class TodoService
         $created = time();
         $id = $this->uuidFactory->uuid4()->toString();
         $q = [
-            'insert into %n (id, text, created) values (%s, %s, %i)',
+            'insert into %n (id, text, created, changed) values (%s, %s, %i, %i)',
             $this->tableName,
             $id,
             $text,
+            $created,
             $created
         ];
         $res = $this->connection->query($q);
         if ($res->rowCount === 1) {
-            return new Todo($id, $text, $created);
+            return new Todo($id, $text, $created, $created);
         }
         return null;
     }
@@ -69,11 +70,12 @@ class TodoService
             $this->createTable();
         }
         $q = [
-            'update %n set text=%s, removed=%i, done=%i',
+            'update %n set text=%s, removed=%i, done=%i, changed=%i',
             $this->tableName,
             $todo->text,
             $todo->removed ?? null,
             $todo->done ?? null,
+            time(),
             'where id = %s', $todo->id
         ];
         $res = $this->connection->query($q);
@@ -90,7 +92,7 @@ class TodoService
 
     protected function mapRow(Row $row): Todo
     {
-        $todo = new Todo($row->id, $row->text, $row->created);
+        $todo = new Todo($row->id, $row->text, $row->created, $row->changed);
         if ($row->done) {
             $todo->done = (int)$row->done;
         }
@@ -116,6 +118,7 @@ class TodoService
                 'id string primary key,',
                 'text string,',
                 'created int,',
+                'changed int,',
                 'done int,',
                 'removed int',
             ')'

@@ -12,7 +12,8 @@ class Todo
     public function __construct(
         public string $id,
         public string $text,
-        public int $created
+        public int $created,
+        public int $changed,
     ){}
 
 }

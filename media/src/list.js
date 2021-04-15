@@ -1,12 +1,13 @@
 'use strict'
 
 import {closest} from "./utils/dom"
+import {hideMessage, showMessage} from "./utils/messages"
 
 let lastTodos;
 
 const todoTemplate = (todo) => {
     return `
-        <div data-id="${todo.id}" style="top:${positionToY(todo.position)}px" class="oneTodo ${(todo.done) ? 'done ' : ''}">
+        <div data-id="${todo.id}" style="top:${positionToY(todo.position)}" class="oneTodo ${(todo.done) ? 'done ' : ''}">
             <div class="todoCheck">[<span>X</span>]</div>
             <div class="todoText">${todo.text}</div>
         </div>
@@ -16,7 +17,7 @@ const todoTemplate = (todo) => {
 const renderTodos = (todos) => {
     let box = document.getElementById('Holder')
     let count = 0;
-
+    todos = sortTodos(todos)
     todos = todos.map(one => {
         one.position = count
         count++
@@ -30,14 +31,32 @@ const renderTodos = (todos) => {
 
 
 const positionToY = (position) => {
-    const height = 20
-    return (position + 1) * height
+    const height = 2.5
+    return `${(position + 1) * height}ch`
+}
+
+const sortTodos = (todos) => {
+    todos = todos.sort((a, b) => {
+        console.log(a)
+        console.log(b)
+        if (!a.hasOwnProperty('done') && !b.hasOwnProperty('done')) {
+            return b.changed - a.changed
+        }
+        if (a.hasOwnProperty('done') && b.hasOwnProperty('done')) {
+            return b.changed - a.changed
+        }
+        if (a.hasOwnProperty('done')) {
+            return 1;
+        }
+        return -1;
+    })
+    return todos
 }
 
 const changeTodos = (todos, lastTodos) => {
     let box = document.getElementById('Holder')
     let count = 0;
-
+    todos = sortTodos(todos)
     todos = todos.map(one => {
         one.position = count
         count++
@@ -53,7 +72,7 @@ const changeTodos = (todos, lastTodos) => {
         }
         let group = box.querySelector(`[data-id="${newTodo.id}"]`)
         if (rendered.position !== newTodo.position) {
-            group.style.top = `${positionToY(newTodo.position)}px`
+            group.style.top = positionToY(newTodo.position)
         }
         if (rendered.done !== newTodo.done) {
             group.classList.remove('done')
@@ -76,10 +95,6 @@ const hideLoading = () => {
     document.getElementById('InitialLoading').classList.add('hidden');
 }
 
-const showError = (text) => {
-    alert(text)
-}
-
 const reloadTodos = () => {
     fetch('/api/todo')
         .then((res) => res.json())
@@ -90,6 +105,8 @@ const reloadTodos = () => {
 }
 
 const doInsert = (text) => {
+    let messageId = Date.now()
+    showMessage('Saving todo&hellip;', messageId, 'info')
     fetch('/api/todo', {
         headers: {
             'Accept': 'application/json',
@@ -103,8 +120,9 @@ const doInsert = (text) => {
                 document.querySelector('#text').value = ''
                 reloadTodos()
             } else {
-                showError('Error saving todo!')
+                showMessage('Error saving todo!', 'ErrorSaving', 'error')
             }
+            hideMessage(messageId)
     })
 }
 
@@ -120,7 +138,7 @@ const doDoneChange = (id, done) => {
         if(res.status === 202) {
             reloadTodos()
         } else {
-            showError('Error saving todo!')
+            showMessage('Error saving todo!', 'ErrorSaving', 'error')
         }
     })
 }

@@ -1,5 +1,14 @@
+$gray: #999;
+$red: #bf3d3d;
+$green: #409120;
+
 body, h1 {
 	font-family: 'Fira Code', 'Ubuntu Mono', monospace;
+	font-size: 14pt;
+}
+
+body {
+	padding: 1.5ch 1ch;
 }
 
 #Wrapper {
@@ -14,7 +23,15 @@ body, h1 {
 }
 
 #Insert {
-	padding-left: 30px;
+	padding-left: 3ch;
+	input {
+		border:none;
+		border-bottom: 1px solid black;
+		width: 30ch;
+		padding: .5ch 1ch;
+		font-family: "Fira Code", "Ubuntu Mono", monospace;
+		font-size: 14pt;
+	}
 }
 
 #Holder {
@@ -24,7 +41,7 @@ body, h1 {
 .oneTodo {
 	display: grid;
 	grid-template-columns: 3ch auto;
-	grid-template-rows: 1.5rem;
+	grid-template-rows: 2.5ch;
 	transition: top 0.5s ease-in-out;
 	position: absolute;
 	left: 0;
@@ -39,7 +56,7 @@ body, h1 {
 		}
 
 		&:hover span {
-			color: #666;
+			color: $gray;
 		}
 	}
 
@@ -53,6 +70,21 @@ body, h1 {
 		.todoCheck span {
 			color: black;
 		}
+	}
+}
+
+#Messages {
+	position: absolute; top: 0; right: 0;
+	width: 20ch;
+
+	p.info{
+		background-color: $gray;
+	}
+	p.error{
+		background-color: $red;
+	}
+	p.success{
+		background-color: $green;
 	}
 }
 
