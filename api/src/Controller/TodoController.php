@@ -17,8 +17,8 @@ class TodoController
 
     public function allTodos(Request $request, Response $response): Response
     {
-        $response = $response->withHeader('Content-Type','application/json');
         $allTodos = $this->todoService->loadAllNotDeleted();
+        $response = $response->withHeader('Content-Type','application/json');
         $response->getBody()->write(json_encode($allTodos));
         return $response;
     }
@@ -35,7 +35,7 @@ class TodoController
             return $response->withStatus(201)
                             ->withHeader('Location', sprintf('/api/todo/%s', $result->id));
         }
-        return $response;
+        return $response->withStatus(500);
     }
 
     public function patchTodo(Request $request, Response $response, array $args): Response
@@ -57,11 +57,14 @@ class TodoController
                 $todo->done = null;
             }
         }
+        if (isset($body->text) && mb_strlen($body->text) > 0) {
+            $todo->text = $body->text;
+        }
         $result = $this->todoService->saveTodo($todo);
         if ($result instanceof Todo) {
             return $response->withStatus(202);
         }
-        return $response;
+        return $response->withStatus(500);
     }
 
     protected function isValidInsert(\stdClass|null $body): bool
@@ -71,6 +74,6 @@ class TodoController
 
     protected function isValidPatch(\stdClass|null $body): bool
     {
-        return ($body !== null && isset($body->done));
+        return ($body !== null && isset($body->done) || $body !== null && isset($body->text));
     }
 }

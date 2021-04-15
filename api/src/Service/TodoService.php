@@ -3,6 +3,7 @@ namespace Tudlu\Api\Service;
 
 use Dibi\Connection;
 use Dibi\Row;
+use JetBrains\PhpStorm\Pure;
 use Ramsey\Uuid\UuidFactoryInterface;
 use Tudlu\Api\Model\Todo;
 
@@ -15,6 +16,9 @@ class TodoService
         protected UuidFactoryInterface $uuidFactory
     ){}
 
+    /**
+     * @return Todo[]
+     */
     public function loadAllNotDeleted(): array
     {
         if (!$this->doesTableExist()){
@@ -69,23 +73,25 @@ class TodoService
         if (!$this->doesTableExist()) {
             $this->createTable();
         }
+        $changed = time();
         $q = [
             'update %n set text=%s, removed=%i, done=%i, changed=%i',
             $this->tableName,
             $todo->text,
             $todo->removed ?? null,
             $todo->done ?? null,
-            time(),
+            $changed,
             'where id = %s', $todo->id
         ];
         $res = $this->connection->query($q);
         if ($res->rowCount === 1) {
+            $todo->changed = $changed;
             return $todo;
         }
         return null;
     }
 
-    protected function mapRows(array $rows)
+    protected function mapRows(array $rows): array
     {
         return array_map([$this, 'mapRow'], $rows);
     }
@@ -102,7 +108,7 @@ class TodoService
         return $todo;
     }
 
-    protected function doesTableExist():bool
+    protected function doesTableExist(): bool
     {
         $q = [
             'SELECT name FROM sqlite_master WHERE type="table" AND name=%s', $this->tableName

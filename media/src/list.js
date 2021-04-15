@@ -9,7 +9,7 @@ const todoTemplate = (todo) => {
     return `
         <div data-id="${todo.id}" class="oneTodo ${(todo.done) ? 'done ' : ''}">
             <div class="todoCheck">[<span>X</span>]</div>
-            <div class="todoText">${todo.text}</div>
+            <div class="todoText" contenteditable="true">${todo.text}</div>
         </div>
     `
 }
@@ -91,6 +91,26 @@ const doDoneChange = (id, done) => {
     })
 }
 
+const doTextChange = (id, text) => {
+    let messageId = Date.now()
+    showMessage('Saving todo&hellip;', messageId, 'info')
+    fetch(`/api/todo/${id}`, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        method: 'PATCH',
+        body: JSON.stringify({text: text})
+    }).then((res) => {
+        if(res.status === 202) {
+            reloadTodos()
+        } else {
+            showMessage('Error saving todo!', 'ErrorSaving', 'error')
+        }
+        hideMessage(messageId)
+    })
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     let form = document.querySelector('#Insert form')
@@ -108,7 +128,18 @@ document.addEventListener('DOMContentLoaded', () => {
             let isDone = g.classList.contains('done')
             doDoneChange(id, !isDone)
         }
+    })
 
+    document.addEventListener('keydown', (event) => {
+        if (event.target.matches('.todoText')) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                let g = closest(event.target, '.oneTodo')
+                let id = g.getAttribute('data-id')
+                let text = event.target.innerText
+                doTextChange(id, text)
+            }
+        }
     })
 
 

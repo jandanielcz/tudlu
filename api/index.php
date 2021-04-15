@@ -7,6 +7,8 @@ use Tudlu\Api\Controller\TodoController;
 
 require_once '../vendor/autoload.php';
 
+\Tracy\Debugger::enable();
+
 // Create and configure Container
 $container = new \DI\Container();
 

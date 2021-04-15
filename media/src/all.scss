@@ -5,6 +5,12 @@ $green: #409120;
 body, h1 {
 	font-family: 'Fira Code', 'Ubuntu Mono', monospace;
 	font-size: 14pt;
+	font-weight: normal;
+	line-height: 2.5ch;
+}
+
+h1 {
+	font-weight: normal;
 }
 
 body {
@@ -24,6 +30,7 @@ body {
 
 #Insert {
 	padding-left: 3ch;
+	height: 5ch;
 	input {
 		border:none;
 		border-bottom: 1px solid black;
@@ -66,15 +73,23 @@ body {
 	}
 
 	&.done {
+
+		color: $gray;
+
 		.todoCheck span {
-			color: black;
+			color: $gray;
 		}
 	}
 }
 
 #Messages {
-	position: absolute; top: 0; right: 0;
+	position: absolute; top: 0; right: 50%;
 	width: 20ch;
+
+	p {
+		line-height: 2.5ch;
+		padding: 0 1ch;
+	}
 
 	p.info{
 		background-color: $gray;
