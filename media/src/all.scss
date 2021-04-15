@@ -35,7 +35,7 @@ body {
 }
 
 #Holder {
-	position: relative;
+
 }
 
 .oneTodo {
@@ -43,7 +43,6 @@ body {
 	grid-template-columns: 3ch auto;
 	grid-template-rows: 2.5ch;
 	transition: top 0.5s ease-in-out;
-	position: absolute;
 	left: 0;
 
 	.todoCheck {

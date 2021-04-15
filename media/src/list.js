@@ -7,7 +7,7 @@ let lastTodos;
 
 const todoTemplate = (todo) => {
     return `
-        <div data-id="${todo.id}" style="top:${positionToY(todo.position)}" class="oneTodo ${(todo.done) ? 'done ' : ''}">
+        <div data-id="${todo.id}" class="oneTodo ${(todo.done) ? 'done ' : ''}">
             <div class="todoCheck">[<span>X</span>]</div>
             <div class="todoText">${todo.text}</div>
         </div>
@@ -16,29 +16,12 @@ const todoTemplate = (todo) => {
 
 const renderTodos = (todos) => {
     let box = document.getElementById('Holder')
-    let count = 0;
-    todos = sortTodos(todos)
-    todos = todos.map(one => {
-        one.position = count
-        count++
-        return one
-    })
-    let todoGroups = todos.map(todoTemplate)
-    box.insertAdjacentHTML('beforeend', todoGroups.join(''))
-    adjustHolderSize()
-    return todos
-}
-
-
-const positionToY = (position) => {
-    const height = 2.5
-    return `${(position + 1) * height}ch`
+    box.innerText = ''
+    box.insertAdjacentHTML('beforeend', sortTodos(todos).map(todoTemplate).join(''))
 }
 
 const sortTodos = (todos) => {
     todos = todos.sort((a, b) => {
-        console.log(a)
-        console.log(b)
         if (!a.hasOwnProperty('done') && !b.hasOwnProperty('done')) {
             return b.changed - a.changed
         }
@@ -53,44 +36,6 @@ const sortTodos = (todos) => {
     return todos
 }
 
-const changeTodos = (todos, lastTodos) => {
-    let box = document.getElementById('Holder')
-    let count = 0;
-    todos = sortTodos(todos)
-    todos = todos.map(one => {
-        one.position = count
-        count++
-        return one
-    })
-    todos.forEach(newTodo => {
-        let rendered = lastTodos.find((lastTodo) => {
-            return (lastTodo.id === newTodo.id)
-        })
-        if (rendered === undefined) {
-            box.insertAdjacentHTML('afterbegin',todoTemplate(newTodo))
-            return;
-        }
-        let group = box.querySelector(`[data-id="${newTodo.id}"]`)
-        if (rendered.position !== newTodo.position) {
-            group.style.top = positionToY(newTodo.position)
-        }
-        if (rendered.done !== newTodo.done) {
-            group.classList.remove('done')
-            group.classList.add((newTodo.done) ? 'done': 'undone');
-        }
-    })
-    adjustHolderSize()
-
-}
-
-const adjustHolderSize = () => {
-    let box = document.getElementById('Holder')
-    let h = Array.from(box.querySelectorAll('.oneTodo')).reduce((sum, todo) => {
-        return (sum + todo.getBoundingClientRect().width)
-    }, 0)
-    box.style.height = `${h}px`
-}
-
 const hideLoading = () => {
     document.getElementById('InitialLoading').classList.add('hidden');
 }
@@ -99,7 +44,7 @@ const reloadTodos = () => {
     fetch('/api/todo')
         .then((res) => res.json())
         .then((res) => {
-                changeTodos(res, lastTodos)
+                renderTodos(res)
             }
         )
 }
@@ -127,6 +72,8 @@ const doInsert = (text) => {
 }
 
 const doDoneChange = (id, done) => {
+    let messageId = Date.now()
+    showMessage('Saving todo&hellip;', messageId, 'info')
     fetch(`/api/todo/${id}`, {
         headers: {
             'Accept': 'application/json',
@@ -140,6 +87,7 @@ const doDoneChange = (id, done) => {
         } else {
             showMessage('Error saving todo!', 'ErrorSaving', 'error')
         }
+        hideMessage(messageId)
     })
 }
 
